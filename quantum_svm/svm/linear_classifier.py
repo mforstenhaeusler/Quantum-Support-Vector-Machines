@@ -108,7 +108,7 @@ class linearSVC:
                 
         # accuarcy 
         y_pred = self.predict(X)
-        accuracy(y, y_pred, mode='train')
+        accuracy(y, y_pred, self.verbose, mode='train')
 
     def project(self, X):
         assert self.w.shape[0] == X.shape[1]

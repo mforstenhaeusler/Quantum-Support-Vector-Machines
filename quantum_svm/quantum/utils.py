@@ -1,4 +1,5 @@
 import numpy as np
+import functools
 
 def hadamard_gate():
     H = np.ones((2,2), dtype=np.complex_)
@@ -24,3 +25,53 @@ def CNOT(gate):
     U = np.eye(4,dtype=np.complex_)
     U[2:, 2:] = gate
     return U 
+
+def data_map_func(x) -> float:
+    """ Data map function, f: R^n -> R
+    
+    Params:
+    -------
+    x : np.ndarray
+        data
+
+    Returns:
+    --------
+    coef : float
+           the mapped value
+    """
+    coeff = x[0] if len(x) == 1 else functools.reduce(lambda m, n: m * n, np.pi - x)
+    return coeff
+
+def data_map_func_sin(x) -> float:
+    """ Data map function, f: R^n -> R
+    
+    Params:
+    -------
+    x : np.ndarray
+        data
+
+    Returns:
+    --------
+    coef : float
+           the mapped value
+    """
+    coeff = x[0] if len(x) == 1 else functools.reduce(lambda m, n: m * n, np.sin(np.pi - x))
+    return coeff
+
+def data_map_func_sin(x) -> float:
+    """ Data map function, f: R^n -> R
+    
+    Params:
+    -------
+    x : np.ndarray
+        data
+
+    Returns:
+    --------
+    coef : float
+           the mapped value
+    """
+    coeff = x[0] if len(x) == 1 else functools.reduce(lambda m, n: np.pi*np.exp(((m - n)*(m - n))/8), x)
+    return coeff
+
+    

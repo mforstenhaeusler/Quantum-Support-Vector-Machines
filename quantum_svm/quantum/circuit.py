@@ -1,10 +1,20 @@
 import numpy as np
-from .gates import hadamard_gate, X_gate, Y_gate, Z_gate, CNOT
 
-class Circuit:
-    def __init__(self, qubits):
-        self.qubits = qubits
-        self.h = hadamard_gate()
-        self.X_gate = X_gate()
-        self.Y_gate = Y_gate()
-        self.Z_gate = Z_gate()
+class QuantumCircuit:
+    def __init__(self, gates: list, n: int):
+        self.gates = gates
+        self.n = n
+
+    def _build_naive_op_mat(self):
+        for gate in self.gates:
+            gate._build_naive_op_mat()
+
+    def apply(self, state_vector) -> np.ndarray:
+        for gate in self.gates:
+            state_vector = gate.apply(state_vector)
+        return state_vector
+
+    def naive_apply(self, state_vector) -> np.ndarray:
+        for gate in self.gates:
+            state_vector = gate.naive_apply(state_vector)
+        return state_vector

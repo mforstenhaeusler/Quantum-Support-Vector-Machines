@@ -4,7 +4,7 @@ from cvxopt import matrix, solvers
 import matplotlib.pyplot as plt
 from numpy.lib.polynomial import poly
 
-from .classical_kernels import linear_kernel, gaussian_kernel, polynomial_kernel, rbf_kernel
+from .classical_kernels import linear_kernel, gaussian_kernel, polynomial_kernel, rbf_kernel, sigmoid_kernel
 from quantum_svm.quantum.quantum_kernels import quantum_kernel 
 from quantum_svm.utils.utils import accuracy
 from tqdm import tqdm
@@ -105,9 +105,9 @@ class kernelSVC:
 
         # Gram Matrix
         if self.kernel == 'quantum':
-            print('Computing Quantum Kernel ...')
+            if self.verbose: print('Computing Quantum Kernel ...')
             K = self.qk(X)
-            print('Quantum Kernel computed!')
+            if self.verbose:  print('Quantum Kernel computed!')
         else:
             K = np.zeros((N, N))
             for i in range(N):
@@ -173,13 +173,13 @@ class kernelSVC:
             if self.w is not None:
                 print(f'Weights: {self.w}')
                 print(f'Bias: {self.b}')
-        print('\n')
+        if self.verbose: print('\n')
                 
         # accuarcy 
         y_pred = self.predict(X)
         self.predictions_train = y_pred
         time.sleep(0.2)
-        accuracy(y, y_pred, mode='training')
+        accuracy(y, y_pred, self.verbose, mode='training')
     
     #@jit
     def project(self, X):
@@ -198,8 +198,21 @@ class kernelSVC:
             # Otherwise, it is determined by
             #   f(x) = sum_i{sum_sv{lambda_sv y_sv K(x_i, x_sv)}}
             y_pred = np.zeros(len(X))
-            with tqdm(range(len(X)), unit="batch") as comput_range:
-                for k in comput_range:
+            if self.verbose:
+                with tqdm(range(len(X)), unit="batch") as comput_range:
+                    for k in comput_range:
+                        #comput_range.set_description(f"Epoch [{epoch+1}/{self.epochs}]  Training")
+                        #print(f'{k+1}/{len(X)}')
+                        for a, sv_X, sv_y in zip(self.alphas, self.sv_X, self.sv_y):
+                            if self.kernel == 'quantum':
+                                #print('a', a)
+                                #print('sv_y', sv_y)
+                                #print('self.qk(X[k], sv_X)', self.qk(X[k], sv_X))
+                                y_pred[k] += a * sv_y * self.qk(X[k], sv_X)
+                            else:
+                                y_pred[k] += a * sv_y * self.kernel_func(X[k], sv_X)
+            else:
+                for k in range(len(X)):
                     #comput_range.set_description(f"Epoch [{epoch+1}/{self.epochs}]  Training")
                     #print(f'{k+1}/{len(X)}')
                     for a, sv_X, sv_y in zip(self.alphas, self.sv_X, self.sv_y):
@@ -210,6 +223,7 @@ class kernelSVC:
                             y_pred[k] += a * sv_y * self.qk(X[k], sv_X)
                         else:
                             y_pred[k] += a * sv_y * self.kernel_func(X[k], sv_X)
+
             return y_pred + self.b
 
     def predict(self, X):
@@ -237,7 +251,7 @@ class kernelSVC:
         elif self.kernel == 'rbf':
             return rbf_kernel(x1, x2, self.gamma)
         elif self.kernel == 'sigmoid':
-            return rbf_kernel(x1, x2, self.gamma)
+            return sigmoid_kernel(x1, x2, self.gamma)
         else:
             raise KernelError
 

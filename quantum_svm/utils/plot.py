@@ -21,41 +21,6 @@ def plot_data(X, y, X_test, y_test, cmap, opacity=0.5,):
     cb.set_label('Classes')
     plt.show()
 
-
-def plotSVM(X, y, cmap, params=None, opacity=0.5, sv=True, hyperplane=True):
-    if params is not None:
-        slope = params['slope']
-        intercept = params['intercept']
-    
-    x = np.linspace(X[:, 0].min(), X[:, 0].max()) # plotting range
-    
-    fig, ax = plt.subplots(1,2, figsize=((20,5)))
-    im1 = ax[0].scatter(X[:,0], X[:,1], c=y, cmap=cmap, s=50, alpha=opacity, label='Data')
-    im2 = ax[1].scatter(X[:,0], X[:,1], c=y, cmap=cmap, s=50, alpha=opacity, label='Data')
-
-    if hyperplane:
-        ax[1].plot(x, slope*x + intercept, 'k-', label='decision boundary')
-        ax[1].plot(x, x * slope + intercept - 1/params['weights'][1], 'k--')
-        ax[1].plot(x, x * slope + intercept + 1/params['weights'][1], 'k--')
-    
-    if sv:
-        #ax[1].scatter(params['sv_X'][:,0], params['sv_X'][:,1], c=params['sv_y'], cmap=cmap, marker='o', edgecolor='black', label='support vectors')
-        ax[1].scatter(params['sv_X'][:,0], params['sv_X'][:,1], s=150, linewidth=2, facecolors="none", edgecolor='black', label='support vectors')
-        
-    
-    for i in range(2):
-        ax[i].set_xlabel('$x_1$')
-        ax[i].set_ylabel('$x_2$')
-        ax[i].legend()
-        #ax[i].grid()        
-        
-    
-    cb = plt.colorbar(im1, ax=ax)
-    loc = np.arange(-1,1,1)
-    cb.set_ticks(loc)
-    cb.set_ticklabels(['-1','1'])
-    plt.show()
-
 def plot_SVM(X, y, params=None, baseline_clf=None, opacity=0.6, titles=None, sv=True, hyperplane=True):
         
     xx = np.linspace(X[:, 0].min(), X[:, 0].max(), 50) # plotting x range
@@ -154,7 +119,7 @@ def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
         # clf's
         for idx, clf in enumerate(clf_list):
             if idx == 0:
-                
+    
                 Z = clf.project(XX).reshape(X1.shape)
                 ax[idx+1].contourf(X1, X2, Z, cmap=cmap, alpha=0.8)
                 # decision boundary
@@ -192,16 +157,16 @@ def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
                     fmt[l] = s
                 ax[idx+1].clabel(cs, cs.levels[1:2], inline=True, fmt=fmt, fontsize=10)
                 # plot support vectors
-                print(clf.support_vectors)
-                ax[idx+1].scatter(
-                    clf.support_vectors_[:, 0],
-                    clf.support_vectors_[:, 1],
-                    s=100,
-                    linewidth=1,
-                    facecolors="none",
-                    edgecolors="k",
-                    label="Support Vectors"
-                )
+                if kernel != 'quantum':
+                    ax[idx+1].scatter(
+                        clf.support_vectors_[:, 0],
+                        clf.support_vectors_[:, 1],
+                        s=100,
+                        linewidth=1,
+                        facecolors="none",
+                        edgecolors="k",
+                        label="Support Vectors"
+                    )
                 ax[2].scatter(X[np.where(y[:] == -1),0], X[np.where(y[:] == -1),1], 
                         c='b', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {-1}')
                 ax[2].scatter(X[np.where(y[:] == 1),0], X[np.where(y[:] == 1),1], 
