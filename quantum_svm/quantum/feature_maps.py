@@ -4,7 +4,7 @@ from .utils import data_map_func
 
 
 class ZZFeatureMap:
-    def __init__(self, n_qubits, reps, data_map, insert_barriers=False):
+    def __init__(self, n_qubits, reps, data_map, insert_barriers=False) -> None:
         self.n_qubits = n_qubits
         self.data_map = data_map
         self.reps = reps
@@ -20,16 +20,16 @@ class ZZFeatureMap:
             circuit.h(1)
             if self.insert_barriers: circuit.barrier()
             if not reverse:  
-                circuit.u(0,0,2*self.data_map(data[:1]),0)
-                circuit.u(0,0,2*self.data_map(data[1:]),1)
+                circuit.u(0,0,2*self.data_map.map(data[:1]),0)
+                circuit.u(0,0,2*self.data_map.map(data[1:]),1)
             else:
-                circuit.u(0,0,-2*self.data_map(data[:1]),0)
-                circuit.u(0,0,-2*self.data_map(data[1:]),1)
+                circuit.u(0,0,-2*self.data_map.map(data[:1]),0)
+                circuit.u(0,0,-2*self.data_map.map(data[1:]),1)
             circuit.cx(0,1)
             if not reverse: 
-                circuit.u(0,0,2*self.data_map(data),1)
+                circuit.u(0,0,2*self.data_map.map(data),1)
             else:
-                circuit.u(0,0,-2*self.data_map(data),1)
+                circuit.u(0,0,-2*self.data_map.map(data),1)
             circuit.cx(0,1)      
         
         if not reverse: 
@@ -37,7 +37,7 @@ class ZZFeatureMap:
         else:
             return circuit.to_instruction().reverse_ops()
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"ZZFeatureMap(feature_dimensions={self.n_qubits}, reps={self.reps})"
 
 
