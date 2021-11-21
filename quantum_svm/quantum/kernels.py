@@ -9,6 +9,7 @@ import numpy as np
 
 class QuantumKernel:
     def __init__(self, feature_map, quantum_backend, sim_params):
+        """ Qunatum Kernel """
         self._feature_map = feature_map
         self.n_qubits = feature_map.n_qubits
         self._quantum_backend = quantum_backend

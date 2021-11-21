@@ -71,17 +71,16 @@ class kernelSVC:
 
         self.qk = quantum_kernel(self.quantum_params)
 
-        self.projections_train = None
-        self.predictions_train = None
+        self.decision_function = None
         
         if self.C is None:
-            print(f'SVC(kernel={self.kernel})')
+            print(f"SVC(kernel='{self.kernel}')")
         elif self.kernel == 'polynominal': 
-            print(f'SVC(kernel={self.kernel}, C={self.C}, degree={self.degree})')
+            print(f"SVC(kernel='{self.kernel}', C={self.C}, degree={self.degree})")
         elif self.kernel == 'gaussian' or self.kernel == 'rbf' or self.kernel == 'sigmoid': 
-            print(f'SVC(kernel={self.kernel}, C={self.C}, gamma={self.gamma})')
+            print(f"SVC(kernel='{self.kernel}', C={self.C}, gamma={self.gamma})")
         else:
-            print(f'SVC(kernel={self.kernel}, C={self.C})')
+            print(f"SVC(kernel='{self.kernel}', C={self.C})")
     
     #@jit
     def fit(self, X, y):
@@ -223,7 +222,7 @@ class kernelSVC:
                             y_pred[k] += a * sv_y * self.qk(X[k], sv_X)
                         else:
                             y_pred[k] += a * sv_y * self.kernel_func(X[k], sv_X)
-
+            self.decision_function = y_pred + self.b
             return y_pred + self.b
 
     def predict(self, X):

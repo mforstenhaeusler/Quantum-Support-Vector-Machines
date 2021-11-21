@@ -1,10 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from qiskit_machine_learning.datasets import ad_hoc
-
 from sklearn.metrics import confusion_matrix
-from matplotlib.legend_handler import HandlerTuple
 import seaborn as sns
+
+from .utils import normalize
 
 def plot_data(X, y, X_test, y_test, cmap, opacity=0.5,):
     fig, ax = plt.subplots(1, figsize=(7,5))
@@ -230,11 +229,12 @@ def plot_datasets(datasets, titles):
     for idx, dataset in enumerate(datasets):
         if idx == 5:
             X_train, y_train, X_test, y_test, adhoc_total = dataset
+            #X_train, y_train, X_test, y_test, adhoc_total = normalize(X_train), normalize(y_train), normalize(X_test), normalize(y_test), normalize(adhoc_total)
             i = idx-3 
-            ax[1, i].set_ylim(0, 2 * np.pi)
-            ax[1, i].set_xlim(0, 2 * np.pi)
-            ax[1, i].imshow(np.asmatrix(adhoc_total).T, interpolation='nearest',
-                    origin='lower', cmap='RdBu', alpha=0.8, extent=[0, 2 * np.pi, 0, 2 * np.pi])
+            #ax[1, i].set_ylim(0, 2 * np.pi)
+            #ax[1, i].set_xlim(0, 2 * np.pi)
+            #ax[1, i].imshow(np.asmatrix(adhoc_total).T, interpolation='nearest',
+            #        origin='lower', cmap='RdBu', alpha=0.8, extent=[0, 1, 0, 1])
 
             ax[1, i].scatter(X_train[np.where(y_train[:] == -1), 0], X_train[np.where(y_train[:] == -1), 1],
                         marker='o', facecolors='b', edgecolors='k', label="class {-1} train")
@@ -245,6 +245,8 @@ def plot_datasets(datasets, titles):
             ax[1, i].scatter(X_test[np.where(y_test[:] == 1), 0], X_test[np.where(y_test[:] == 1), 1],
                         marker='s', facecolors='r', edgecolors='k', label="class {1} test")
             ax[1, i].set_title(titles[idx], fontsize=13)
+            ax[1, i].set_xticks([])
+            ax[1, i].set_yticks([])
         else:
             X_train, X_test, y_train, y_test = dataset
         
@@ -258,6 +260,8 @@ def plot_datasets(datasets, titles):
                 ax[0, idx].scatter(X_test[np.where(y_test[:] == 1),0], X_test[np.where(y_test[:] == 1),1], 
                     c='r', marker='s', alpha=0.6, edgecolor='k', label='Class {1} Train')
                 ax[0, idx].set_title(titles[idx], fontsize=13)
+                ax[0, idx].set_xticks([])
+                ax[0, idx].set_yticks([])
             else:
                 i = idx-3    
                 ax[1, i].scatter(X_train[np.where(y_train[:] == -1),0], X_train[np.where(y_train[:] == -1),1], 
@@ -269,6 +273,8 @@ def plot_datasets(datasets, titles):
                 ax[1, i].scatter(X_test[np.where(y_test[:] == 1),0], X_test[np.where(y_test[:] == 1),1], 
                     c='r', marker='s', alpha=0.6, edgecolor='k', label='Class {1} Train')
                 ax[1, i].set_title(titles[idx], fontsize=13)
+                ax[1, i].set_xticks([])
+                ax[1, i].set_yticks([])
             
     handles, labels = plt.gca().get_legend_handles_labels()
     fig.legend(handles, labels, loc='lower center', ncol=4, fontsize=13)

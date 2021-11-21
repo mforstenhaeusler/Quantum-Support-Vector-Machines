@@ -4,11 +4,12 @@ from .utils import data_map_func
 
 
 class ZZFeatureMap:
-    def __init__(self, n_qubits, reps, data_map=data_map_func, insert_barriers=False):
+    def __init__(self, n_qubits, reps, data_map, insert_barriers=False):
         self.n_qubits = n_qubits
         self.data_map = data_map
         self.reps = reps
         self.insert_barriers = insert_barriers
+        self._circuit = None
     
     def map(self, data: ndarray, reverse=False):
         circuit = QuantumCircuit(self.n_qubits)
@@ -35,6 +36,10 @@ class ZZFeatureMap:
             return circuit.to_instruction()
         else:
             return circuit.to_instruction().reverse_ops()
+    
+    def __repr__(self):
+        return f"ZZFeatureMap(feature_dimensions={self.n_qubits}, reps={self.reps})"
+
 
 
 class ZZFeatureMap_2:

@@ -26,7 +26,7 @@ def CNOT(gate):
     U[2:, 2:] = gate
     return U 
 
-def data_map_func(x) -> float:
+def data_map_func_default(x) -> float:
     """ Data map function, f: R^n -> R
     
     Params:
@@ -58,7 +58,7 @@ def data_map_func_sin(x) -> float:
     coeff = x[0] if len(x) == 1 else functools.reduce(lambda m, n: m * n, np.sin(np.pi - x))
     return coeff
 
-def data_map_func_sin(x) -> float:
+def data_map_func_cos(x) -> float:
     """ Data map function, f: R^n -> R
     
     Params:
