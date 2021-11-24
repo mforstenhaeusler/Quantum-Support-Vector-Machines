@@ -66,7 +66,7 @@ def adhoc_dataset(train_size, test_size, adhoc_dimension, gap):
     y_train[y_train == 0] = -1
     y_test[y_test == 0] = -1
     
-    return X_train, y_train, X_test, y_test, adhoc_total
+    return X_train, y_train.astype(np.float), X_test, y_test.astype(np.float), adhoc_total
 
 
 

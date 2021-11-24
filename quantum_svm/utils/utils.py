@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 from time import time
 
 def normalize(X):
@@ -11,11 +12,14 @@ def normalize(X):
 
 def accuracy(y, y_pred, verbose, mode):
     y_true = y[y == y_pred]
-    if verbose: print(f'Accuracy on {mode} set: {len(y_true)/len(y) * 100} %')
+    if verbose: 
+        print(f'Accuracy on {mode} set: {len(y_true)/len(y) * 100} %')
+    else:
+        return len(y_true)/len(y)
 
 
 
-def compare_models(datasets, models, titles, opacity=1, decision_func=False, scikit=False):
+def compare_models(datasets, models, data_titles, titles, opacity=1, decision_func=False, scikit=False):
     """
     
     Params:
@@ -36,7 +40,7 @@ def compare_models(datasets, models, titles, opacity=1, decision_func=False, sci
     for idx, dataset in enumerate(datasets):
         figure = plt.figure(figsize=(27, 20))
         ax = plt.subplot(len(datasets), len(models)+1, i)
-        if idx == 5:
+        if idx == len(datasets)-1:
             X_train, y_train, X_test, y_test, adhoc_total = dataset
             #X_train, y_train, X_test, y_test, adhoc_total = normalize(X_train), normalize(y_train), normalize(X_test), normalize(y_test), normalize(adhoc_total)
         else:
@@ -57,7 +61,7 @@ def compare_models(datasets, models, titles, opacity=1, decision_func=False, sci
             c='b', marker='s', alpha=0.6, edgecolor='k', label='Class {-1} Train')
         ax.scatter(X_test[np.where(y_test[:] == 1),0], X_test[np.where(y_test[:] == 1),1], 
             c='r', marker='s', alpha=0.6, edgecolor='k', label='Class {1} Train')
-        ax.set_title("Data", fontsize=13)
+        ax.set_title(data_titles[idx], fontsize=13)
         ax.set_xticks([])
         ax.set_yticks([])
         
@@ -124,3 +128,50 @@ def compare_models(datasets, models, titles, opacity=1, decision_func=False, sci
 
     end = time()
     print('Time to compute:', (end-start)/60, 'min')
+
+def compare_model_performance(datasets, models, data_titles, titles, scikit=False):
+    """
+    
+    Params:
+    -------
+    datasets : list
+               list of datasets
+    
+    models : list
+             list of models
+    
+    Return:
+    -------
+    sol_dict : dict
+               dictionary of model accuracy scores 
+    """
+    start = time()
+    i = 1
+    sol_dict = {}
+    #with tqdm(enumerate(datasets), unit="batch") as comput_range:
+    for idx, dataset in enumerate(datasets):
+        if idx == len(datasets)-1:
+            X_train, y_train, X_test, y_test, adhoc_total = dataset
+            #X_train, y_train, X_test, y_test, adhoc_total = normalize(X_train), normalize(y_train), normalize(X_test), normalize(y_test), normalize(adhoc_total)
+        else:
+            X_train, X_test, y_train, y_test = dataset
+        
+        sol_dict[data_titles[idx]] = {}
+        
+        for clf, title in zip(models, titles):
+            print(f'compute {title} ...')
+            clf.fit(X_train, y_train)
+            
+            if scikit: 
+                score = clf.score(X_test, y_test)
+            else:
+                score = clf.score(X_test, y_test)
+
+            sol_dict[data_titles[idx]][title] = score
+            print(f'{title} computed!')
+    print(f'Performance on {data_titles[idx]} computed')
+    print('\n')
+
+    end = time()
+    print('Time to compute:', (end-start)/60, 'min')
+    return sol_dict

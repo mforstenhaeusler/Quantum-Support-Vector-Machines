@@ -74,7 +74,7 @@ class DataMap_Exp(DataMap):
         if self.default:
             return "phi_S : x --> {x if S={i}, (pi - x[i])(pi - x[j]) if S={i,j})"
         else:
-            return "phi_S : x --> {x if S={i}, sin((pi - x[i]))sin((pi - x[j])) if S={i,j})"
+            return "phi_S : x --> {x if S={i}, exp{(|x[i] - x[j]|^2/(8/ln(pi)))} if S={i,j})"
 
     def _custom(self, x) -> float:
         """ Data map function, f: R^n -> R
@@ -93,7 +93,7 @@ class DataMap_Exp(DataMap):
         coeff = x[0] if len(x) == 1 else functools.reduce(lambda m, n: np.pi*np.exp(((m - n)*(m - n))/8), x)
         return coeff
 
-class DataMap_Exp(DataMap):
+class DataMap_Cos(DataMap):
     def __init__(self, default=False) -> None:
         super().__init__(default)
         self.default
@@ -102,7 +102,7 @@ class DataMap_Exp(DataMap):
         if self.default:
             return "phi_S : x --> {x if S={i}, (pi - x[i])(pi - x[j]) if S={i,j})"
         else:
-            return "phi_S : x --> {x if S={i}, sin((pi - x[i]))sin((pi - x[j])) if S={i,j})"
+            return "phi_S : x --> {x if S={i}, pi/3*(1/(cos(x[i])cos(x[j]))) if S={i,j})"
 
     def _custom(self, x) -> float:
         """ Data map function, f: R^n -> R

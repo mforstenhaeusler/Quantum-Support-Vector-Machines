@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 from numpy.lib.polynomial import poly
 
 from .classical_kernels import linear_kernel, gaussian_kernel, polynomial_kernel, rbf_kernel, sigmoid_kernel
-from quantum_svm.quantum.quantum_kernels import quantum_kernel 
+from quantum_svm.quantum.kernel_loader import quantum_kernel_loader 
+from quantum_svm.quantum.kernels import QuantumKernel 
 from quantum_svm.utils.utils import accuracy
 from tqdm import tqdm
 import time
@@ -14,7 +15,16 @@ import seaborn as sns
 #from numba import jit
 
 class kernelSVC:
-    def __init__(self, quantum_parans, kernel='linear', C=None, gamma=0.5, degree=3, alpha_tol=1e-4, verbose=True):
+    def __init__(self, 
+        kernel='linear',
+        C=None, 
+        gamma=0.5, 
+        degree=3, 
+        alpha_tol=1e-4, 
+        quantum_parans=None,
+        data_map=None,
+        qiskit=True,
+        verbose=True):
         """ Support Vector Classifier implementing the Kernel Trick on SVM dual problem
         Parameters
         ----------
@@ -36,6 +46,12 @@ class kernelSVC:
         quantum_params : dict
                          dictionary of quantum parameters required for computation
         
+        data_map : float
+                   Data map function, f: R^n -> R
+
+        qiskit : bool
+                 determines if qiskit's QuantumKernel is used or custom implementation
+
         verbose : bool
                   determines if report is printed
 
@@ -69,12 +85,12 @@ class kernelSVC:
         self.b = None
         self.is_fit = False
 
-        self.qk = quantum_kernel(self.quantum_params)
+        self.qk = quantum_kernel_loader(self.quantum_params, data_map, qiskit)
 
         self.decision_function = None
         
-        if self.C is None:
-            print(f"SVC(kernel='{self.kernel}')")
+        if self.C is None and self.kernel=='quantum':
+            print(f"SVC(kernel='{self.kernel}, feature_map='ZZFeatureMap', data_map='{data_map}'')")
         elif self.kernel == 'polynominal': 
             print(f"SVC(kernel='{self.kernel}', C={self.C}, degree={self.degree})")
         elif self.kernel == 'gaussian' or self.kernel == 'rbf' or self.kernel == 'sigmoid': 
@@ -82,7 +98,6 @@ class kernelSVC:
         else:
             print(f"SVC(kernel='{self.kernel}', C={self.C})")
     
-    #@jit
     def fit(self, X, y):
         """ Solves SVM dual problem with a QP solver.
 
@@ -157,9 +172,6 @@ class kernelSVC:
 
         # Compute w only if the kernel is linear
         if self.kernel == linear_kernel:
-            #self.w = np.zeros(N)
-            #for i in range(len(self.alphas)):
-            #    self.w += self.alphas[i] * self.sv_X[i] * self.sv_y[i]
             self.w = np.einsum('i,i,ij', self.alphas, self.sv_y, self.sv_X)
         else:
             self.w = None
@@ -180,7 +192,6 @@ class kernelSVC:
         time.sleep(0.2)
         accuracy(y, y_pred, self.verbose, mode='training')
     
-    #@jit
     def project(self, X):
         # If the model is not fit, raise an exception
         if not self.is_fit:
@@ -190,9 +201,6 @@ class kernelSVC:
         if self.w is not None:
             self.projections_train = np.dot(X, self.w) + self.b
             return np.dot(X, self.w) + self.b
-        #elif self.kernel == 'quantum':
-
-        #    return print(self.alphas.shape, self.sv_X.shape, self.sv_y.shape, X.shape)
         else:
             # Otherwise, it is determined by
             #   f(x) = sum_i{sum_sv{lambda_sv y_sv K(x_i, x_sv)}}
@@ -204,29 +212,37 @@ class kernelSVC:
                         #print(f'{k+1}/{len(X)}')
                         for a, sv_X, sv_y in zip(self.alphas, self.sv_X, self.sv_y):
                             if self.kernel == 'quantum':
-                                #print('a', a)
-                                #print('sv_y', sv_y)
-                                #print('self.qk(X[k], sv_X)', self.qk(X[k], sv_X))
                                 y_pred[k] += a * sv_y * self.qk(X[k], sv_X)
                             else:
                                 y_pred[k] += a * sv_y * self.kernel_func(X[k], sv_X)
             else:
                 for k in range(len(X)):
-                    #comput_range.set_description(f"Epoch [{epoch+1}/{self.epochs}]  Training")
-                    #print(f'{k+1}/{len(X)}')
                     for a, sv_X, sv_y in zip(self.alphas, self.sv_X, self.sv_y):
                         if self.kernel == 'quantum':
                             #print('a', a)
                             #print('sv_y', sv_y)
+                            #print(self.qk)
                             #print('self.qk(X[k], sv_X)', self.qk(X[k], sv_X))
                             y_pred[k] += a * sv_y * self.qk(X[k], sv_X)
                         else:
                             y_pred[k] += a * sv_y * self.kernel_func(X[k], sv_X)
+            
             self.decision_function = y_pred + self.b
             return y_pred + self.b
 
     def predict(self, X):
-        return np.sign(self.project(X))
+        if self.is_fit:
+            return np.sign(self.project(X))
+        else:
+            raise SVMNotFitError
+
+    def score(self, X, y):
+        if self.is_fit:
+            y_pred = self.predict(X)
+            time.sleep(0.2)
+            return accuracy(y, y_pred, False, mode='test')
+        else:
+            raise SVMNotFitError 
 
     def parameters(self):
         """ Gets all the relevant parameter for the return dictionary """

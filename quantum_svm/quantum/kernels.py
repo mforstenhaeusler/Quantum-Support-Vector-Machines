@@ -1,10 +1,4 @@
-from numpy import ndarray
-from qiskit import QuantumCircuit, execute, Aer
-from qiskit.pulse.configuration import Kernel
-from qiskit.utils import QuantumInstance
-from qiskit.circuit import instruction
-from qiskit.circuit.classicalregister import ClassicalRegister
-from qiskit.circuit.quantumregister import QuantumRegister
+from qiskit import QuantumCircuit, execute
 import numpy as np
 
 class QuantumKernel:
@@ -34,32 +28,90 @@ class QuantumKernel:
 
         return circuit
 
-    def evaluate(self, X):
+    def evaluate(self, x_vec, y_vec=None) -> np.ndarray:
+        # - - - adopted form qiskit source code - - -
+        if not isinstance(x_vec, np.ndarray):
+            x_vec = np.asarray(x_vec)
+        if y_vec is not None and not isinstance(y_vec, np.ndarray):
+            y_vec = np.asarray(y_vec)
+
+        if x_vec.ndim > 2:
+            raise ValueError("x_vec must be a 1D or 2D array")
+
+        if x_vec.ndim == 1:
+            x_vec = np.reshape(x_vec, (-1, 2))
+
+        if y_vec is not None and y_vec.ndim > 2:
+            raise ValueError("y_vec must be a 1D or 2D array")
+
+        if y_vec is not None and y_vec.ndim == 1:
+            y_vec = np.reshape(y_vec, (-1, 2))
+
+        if y_vec is not None and y_vec.shape[1] != x_vec.shape[1]:
+            raise ValueError(
+                "x_vec and y_vec have incompatible dimensions.\n"
+                f"x_vec has {x_vec.shape[1]} dimensions, but y_vec has {y_vec.shape[1]}."
+            )
+
+        if x_vec.shape[1] != self._feature_map.n_qubits:
+            try:
+                self._feature_map.num_qubits = x_vec.shape[1]
+            except AttributeError:
+                raise ValueError(
+                    "x_vec and class feature map have incompatible dimensions.\n"
+                    f"x_vec has {x_vec.shape[1]} dimensions, "
+                    f"but feature map has {self._feature_map.n_qubits}."
+                ) 
+
+        if y_vec is not None and y_vec.shape[1] != self._feature_map.n_qubits:
+            raise ValueError(
+                "y_vec and class feature map have incompatible dimensions.\n"
+                f"y_vec has {y_vec.shape[1]} dimensions, but feature map "
+                f"has {self._feature_map.n_qubits}."
+            )
+        # - - - adopted form qiskit source code - - -
         measurement_basis = "0" * self._feature_map.n_qubits
 
         # calculate kernel
         if self._statevector_sim: # statevector simulator
             raise BackendError
         else:
-            N, D = X.shape
-            circuits = []
-            for i in range(N):
-                for j in range(N):
-                    circuits.append(self.construct_circuit(X[i], X[j]))
-            
-            k_values = []
-            # calculate the inner products via the unintary operator
-            job = execute(circuits, self._quantum_backend, shots=self.sim_params['shots'], seed_simulator=self.sim_params['seed'], see_transpiler=self.sim_params['seed'])
-            # get the results
-            for j in range(len(circuits)):
-                # calculate the kernel values
-                k_values.append(self._compute_kernel_val(j, job, measurement_basis))
-            
-            kernel = np.array(k_values).reshape(X.shape[0], X.shape[0])
-            return kernel
-            
+            if y_vec is None:
+                N, D = x_vec.shape
+                circuits = []
+                for i in range(N):
+                    for j in range(N):
+                        circuits.append(self.construct_circuit(x_vec[i], x_vec[j]))
+                
+                k_values = []
+                # calculate the inner products via the unintary operator
+                job = execute(circuits, self._quantum_backend, shots=self.sim_params['shots'], seed_simulator=self.sim_params['seed'], see_transpiler=self.sim_params['seed'])
+                # get the results
+                for j in range(len(circuits)):
+                    # calculate the kernel values
+                    k_values.append(self.__compute_kernel_val(j, job, measurement_basis))
+                
+                kernel = np.array(k_values).reshape(x_vec.shape[0], x_vec.shape[0])
+                return kernel
+            else:
+                N, M = x_vec.shape[0], y_vec.shape[0]
+                circuits = []
+                for i in range(N):
+                    for j in range(N):
+                        circuits.append(self.construct_circuit(x_vec[i], y_vec[j]))
+                
+                k_values = []
+                # calculate the inner products via the unintary operator
+                job = execute(circuits, self._quantum_backend, shots=self.sim_params['shots'], seed_simulator=self.sim_params['seed'], see_transpiler=self.sim_params['seed'])
+                
+                # get the results
+                for j in range(len(circuits)):
+                    # calculate the kernel values
+                    k_values.append(self.__compute_kernel_val(j, job, measurement_basis))
+                kernel = np.array(k_values).reshape(N, M)
+                return kernel
 
-    def _compute_kernel_val(self, idx, job, measurement_basis):
+    def __compute_kernel_val(self, idx, job, measurement_basis):
         """
         Computes the kernel values form the results of the inner products.
         """
