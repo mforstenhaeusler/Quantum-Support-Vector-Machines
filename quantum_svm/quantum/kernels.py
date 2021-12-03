@@ -3,7 +3,18 @@ import numpy as np
 
 class QuantumKernel:
     def __init__(self, feature_map, quantum_backend, sim_params):
-        """ Qunatum Kernel """
+        """ Qunatum Kernel 
+        Implements Equation ... from slides.
+        
+        Params:
+        -------
+        feature_map : qiskit instruction
+                      instruction for parameterized quantum circuit
+        quantum_backend : qiskit backend simulator 
+                          qiskit backend simulator that allows to simulate a quantum circuit
+        sim_param : dict
+                    simulation parameters required by qiskit backend
+        """
         self._feature_map = feature_map
         self.n_qubits = feature_map.n_qubits
         self._quantum_backend = quantum_backend
@@ -15,6 +26,19 @@ class QuantumKernel:
             self._statevector_sim = False
 
     def construct_circuit(self, X1, X2):
+        """ Constructs the parameterzied circuits for the quantum kernel calculation
+        
+        Params:
+        -------
+        X1 : np.ndarray
+             classical data point to be transfered to quantum state 
+        X1 : np.ndarray
+             classical data point to be transfered to quantum state 
+
+        Return:
+        -------
+        Parameterized quantum circuits for each entry of the qunatum kernel matrix.
+        """
         circuit = QuantumCircuit(self.n_qubits, self.n_qubits)
         if self._statevector_sim: # statevector simulator
             raise BackendError
@@ -29,6 +53,19 @@ class QuantumKernel:
         return circuit
 
     def evaluate(self, x_vec, y_vec=None) -> np.ndarray:
+        """ Computes the quantum kernel
+        
+        Params:
+        -------
+        x_vec : 1D or 2D np.ndarray 
+                classical data to be transfered to quantum state 
+        y_vec : 1D or 2D np.ndarray
+                classical data to be transfered to quantum state 
+
+        Return:
+        -------
+        Quantum Kernel Matrix
+        """
         # - - - adopted form qiskit source code - - -
         if not isinstance(x_vec, np.ndarray):
             x_vec = np.asarray(x_vec)
@@ -85,7 +122,8 @@ class QuantumKernel:
                 
                 k_values = []
                 # calculate the inner products via the unintary operator
-                job = execute(circuits, self._quantum_backend, shots=self.sim_params['shots'], seed_simulator=self.sim_params['seed'], see_transpiler=self.sim_params['seed'])
+                job = execute(circuits, self._quantum_backend, shots=self.sim_params['shots'], 
+                                seed_simulator=self.sim_params['seed'], see_transpiler=self.sim_params['seed'])
                 # get the results
                 for j in range(len(circuits)):
                     # calculate the kernel values
@@ -102,8 +140,8 @@ class QuantumKernel:
                 
                 k_values = []
                 # calculate the inner products via the unintary operator
-                job = execute(circuits, self._quantum_backend, shots=self.sim_params['shots'], seed_simulator=self.sim_params['seed'], see_transpiler=self.sim_params['seed'])
-                
+                job = execute(circuits, self._quantum_backend, shots=self.sim_params['shots'], 
+                                seed_simulator=self.sim_params['seed'], see_transpiler=self.sim_params['seed'])
                 # get the results
                 for j in range(len(circuits)):
                     # calculate the kernel values
@@ -114,6 +152,13 @@ class QuantumKernel:
     def __compute_kernel_val(self, idx, job, measurement_basis):
         """
         Computes the kernel values form the results of the inner products.
+
+        Params:
+        -------
+
+        Return:
+        -------
+        Kernel value of entry [i, j] in Quantum Kernel Matrix K_{ij}
         """
         if self._statevector_sim:
            raise BackendError
@@ -124,4 +169,4 @@ class QuantumKernel:
         return kernel_value
 
 class BackendError(Exception):
-    """ Choose a qasm simulator """
+    """ Choose a qasm simulator, statevector simulation has not been implemented yet"""

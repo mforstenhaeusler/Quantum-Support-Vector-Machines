@@ -172,8 +172,8 @@ def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
                         c='r', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {1}')
 
         for i in range(3):
-            ax[i].set_xlabel('Predictions')
-            ax[i].set_ylabel('Test Set')
+            ax[i].set_xlabel('$x_1$')
+            ax[i].set_ylabel('$x_2$')
             ax[i].set_xlim(xx.min(), xx.max())
             ax[i].set_ylim(yy.min(), yy.max())
             if titles:

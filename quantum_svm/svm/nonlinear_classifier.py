@@ -143,12 +143,7 @@ class kernelSVC:
 
         A = matrix(y.reshape(1,-1))
         b = matrix(np.zeros(1))
-        #print('P:', P.size)
-        #print('q:', q.size)
-        #print('G:', G.size)
-        #print('h:', h.size)
-        #print('A:', A.size)
-        #print('b:', b.size)
+
         # QP solver 
         solvers.options['show_progress'] = False
         solution = solvers.qp(P, q, G, h, A, b)
@@ -203,13 +198,11 @@ class kernelSVC:
             return np.dot(X, self.w) + self.b
         else:
             # Otherwise, it is determined by
-            #   f(x) = sum_i{sum_sv{lambda_sv y_sv K(x_i, x_sv)}}
+            #   f(x) = sum_i{sum_sv{alpha_sv y_sv K(x_i, x_sv)}}
             y_pred = np.zeros(len(X))
             if self.verbose:
                 with tqdm(range(len(X)), unit="batch") as comput_range:
                     for k in comput_range:
-                        #comput_range.set_description(f"Epoch [{epoch+1}/{self.epochs}]  Training")
-                        #print(f'{k+1}/{len(X)}')
                         for a, sv_X, sv_y in zip(self.alphas, self.sv_X, self.sv_y):
                             if self.kernel == 'quantum':
                                 y_pred[k] += a * sv_y * self.qk(X[k], sv_X)
@@ -219,10 +212,6 @@ class kernelSVC:
                 for k in range(len(X)):
                     for a, sv_X, sv_y in zip(self.alphas, self.sv_X, self.sv_y):
                         if self.kernel == 'quantum':
-                            #print('a', a)
-                            #print('sv_y', sv_y)
-                            #print(self.qk)
-                            #print('self.qk(X[k], sv_X)', self.qk(X[k], sv_X))
                             y_pred[k] += a * sv_y * self.qk(X[k], sv_X)
                         else:
                             y_pred[k] += a * sv_y * self.kernel_func(X[k], sv_X)
