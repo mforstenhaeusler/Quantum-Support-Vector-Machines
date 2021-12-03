@@ -26,8 +26,9 @@ class kernelSVC:
         qiskit=True,
         verbose=True):
         """ Support Vector Classifier implementing the Kernel Trick on SVM dual problem
-        Parameters
-        ----------
+
+        Params:
+        -------
         kernel : str
                  indicates the kernel in use
                 
@@ -54,11 +55,6 @@ class kernelSVC:
 
         verbose : bool
                   determines if report is printed
-
-        Returns
-        -------
-        params : dict
-                 Dictionary with all the relevant parameters for display the classifiation.
         """
         self.kernel = kernel 
         if self.kernel == 'linear' or self.kernel == 'polynominal' or self.kernel == 'gaussian' or self.kernel == 'rbf' or self.kernel == 'sigmoid' or self.kernel == 'quantum':
@@ -226,6 +222,7 @@ class kernelSVC:
             raise SVMNotFitError
 
     def score(self, X, y):
+        """ Computes and returns the accuracy of the model """
         if self.is_fit:
             y_pred = self.predict(X)
             time.sleep(0.2)

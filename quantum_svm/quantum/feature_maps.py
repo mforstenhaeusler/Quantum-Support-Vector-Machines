@@ -3,6 +3,22 @@ from qiskit import QuantumCircuit
 
 class ZZFeatureMap:
     def __init__(self, n_qubits, reps, data_map, insert_barriers=False) -> None:
+        """ ZZFeature Map
+        Implements Equation ... from slides.
+
+        Params:
+        -------
+        n_qubits : int 
+                   number of qubits
+        reps : int
+               number of repetitions of unitary operator 
+        
+        data_map : data map class
+                   data map class that is used to encode the classical data
+
+        insert_barriers : bool
+                          if true, inserts barriers into the quantum circuit in qiskit
+        """
         self.n_qubits = n_qubits
         self.data_map = data_map
         self.reps = reps
@@ -10,6 +26,7 @@ class ZZFeatureMap:
         self._circuit = None
     
     def map(self, data, reverse=False):
+        """ Function that builds the parameterized quantum circuit of the ZZ-Feature Map"""
         circuit = QuantumCircuit(self.n_qubits)
         for i in range(self.reps):
             if i > 0:

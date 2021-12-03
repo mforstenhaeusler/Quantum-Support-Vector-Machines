@@ -15,7 +15,7 @@ def quantum_kernel_loader(params, data_map=None, qiskit_indicator=True):
              quantum parameters required for init of feature_map and kernel  
     
     data_map : float
-                Data map function, f: R^n -> R
+               Data map function, f: R^n -> R
 
     qiskit_indicator : bool
                        determines if qiskit's QuantumKernel or custom implementation is used 
@@ -78,7 +78,7 @@ def quantum_kernel_loader(params, data_map=None, qiskit_indicator=True):
         return NotInitializedError
 
 class NotInitializedError(Exception): 
-    """ quantum parameters have not been initialized """ 
+    """ Quantum parameters have not been initialized """ 
 
 class NoDataMapError(Exception): 
     """ No data map implemented """ 
