@@ -129,7 +129,7 @@ def compare_models(datasets, models, data_titles, titles, opacity=1, decision_fu
     end = time()
     print('Time to compute:', (end-start)/60, 'min')
 
-def compare_model_performance(datasets, models, data_titles, titles, scikit=False):
+def compare_model_performance(datasets, models, data_titles, titles, scikit=False, verbose=False):
     """
     
     Params:
@@ -159,7 +159,7 @@ def compare_model_performance(datasets, models, data_titles, titles, scikit=Fals
         sol_dict[data_titles[idx]] = {}
         
         for clf, title in zip(models, titles):
-            print(f'compute {title} ...')
+            if verbose: print(f'compute {title} ...')
             clf.fit(X_train, y_train)
             
             if scikit: 
@@ -168,9 +168,9 @@ def compare_model_performance(datasets, models, data_titles, titles, scikit=Fals
                 score = clf.score(X_test, y_test)
 
             sol_dict[data_titles[idx]][title] = score
-            print(f'{title} computed!')
-    print(f'Performance on {data_titles[idx]} computed')
-    print('\n')
+            if verbose: print(f'{title} computed!')
+    if verbose: print(f'Performance on {data_titles[idx]} computed')
+    if verbose: print('\n')
 
     end = time()
     print('Time to compute:', (end-start)/60, 'min')

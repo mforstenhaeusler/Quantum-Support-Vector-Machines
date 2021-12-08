@@ -155,7 +155,13 @@ class QuantumKernel:
 
         Params:
         -------
+        idx : int
+              index to be computed
+        
+        job : executed qiskit circuit result
 
+        measurement_bias : str
+                           qubit string, 0^n that we want to measure 
         Return:
         -------
         Kernel value of entry [i, j] in Quantum Kernel Matrix K_{ij}
