@@ -1,8 +1,9 @@
 from qiskit import QuantumCircuit
+from .data_maps import DataMap
 
 
 class ZZFeatureMap:
-    def __init__(self, n_qubits, reps, data_map, insert_barriers=False) -> None:
+    def __init__(self, n_qubits, reps, data_map=None, insert_barriers=False) -> None:
         """ ZZFeature Map
         Special Pauli-Feature Map. Implements Equation 41 from slides.
 
@@ -20,7 +21,10 @@ class ZZFeatureMap:
                           if true, inserts barriers into the quantum circuit in qiskit
         """
         self.n_qubits = n_qubits
-        self.data_map = data_map
+        if data_map is None:
+            self.data_map = DataMap()
+        else:
+            self.data_map = data_map
         self.reps = reps
         self.insert_barriers = insert_barriers
         self._circuit = None
@@ -55,6 +59,8 @@ class ZZFeatureMap:
     def __repr__(self) -> str:
         return f"ZZFeatureMap(feature_dimensions={self.n_qubits}, reps={self.reps})"
 
+    def __str__(self) -> str:
+        return f"ZZFeatureMap(feature_dimensions={self.n_qubits}, reps={self.reps})"
 
 class ZFeatureMap:
     def __init__(self, n_qubits, reps, data_map, insert_barriers=False) -> None:
@@ -102,4 +108,7 @@ class ZFeatureMap:
             return circuit.to_instruction().reverse_ops()
     
     def __repr__(self) -> str:
+        return f"ZFeatureMap(feature_dimensions={self.n_qubits}, reps={self.reps})"
+    
+    def __str__(self) -> str:
         return f"ZFeatureMap(feature_dimensions={self.n_qubits}, reps={self.reps})"

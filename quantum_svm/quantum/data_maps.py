@@ -7,7 +7,7 @@ class DataMap:
 
     def __repr__(self) -> str:
         if self.default:
-            return "phi_S : x --> {x if S={i}, (pi - x[0])(pi - x[0] if S={i,j})"
+            return "phi_S : x --> {x if S={i}, (pi - x[0])(pi - x[0]) if S={i,j}"
         else:
             raise NotImplementedError
 
@@ -30,7 +30,7 @@ class DataMap:
         coeff = x[0] if len(x) == 1 else functools.reduce(lambda m, n: m * n, np.pi - x)
         return coeff
     
-    def map(self, x):
+    def map(self, x) -> float:
         if self.default:
             return self._default(x)
         else:
@@ -44,9 +44,9 @@ class DataMap_Sin(DataMap):
     
     def __repr__(self) -> str:
         if self.default:
-            return "phi_S : x --> {x if S={i}, (pi - x[i])(pi - x[j]) if S={i,j})"
+            return "phi_S : x --> {x if S={i}, (pi - x[i])(pi - x[j]) if S={i,j}"
         else:
-            return "phi_S : x --> {x if S={i}, sin((pi - x[i]))sin((pi - x[j])) if S={i,j})"
+            return "phi_S : x --> {x if S={i}, sin((pi - x[i]))sin((pi - x[j])) if S={i,j}"
 
     def _custom(self, x) -> float:
         """ Data map function, f: R^n -> R
@@ -72,9 +72,9 @@ class DataMap_Exp(DataMap):
     
     def __repr__(self) -> str:
         if self.default:
-            return "phi_S : x --> {x if S={i}, (pi - x[i])(pi - x[j]) if S={i,j})"
+            return "phi_S : x --> {x if S={i}, (pi - x[i])(pi - x[j]) if S={i,j}"
         else:
-            return "phi_S : x --> {x if S={i}, exp{(|x[i] - x[j]|^2/(8/ln(pi)))} if S={i,j})"
+            return "phi_S : x --> {x if S={i}, exp{(|x[i] - x[j]|^2/(8/ln(pi)))} if S={i,j}"
 
     def _custom(self, x) -> float:
         """ Data map function, f: R^n -> R
@@ -100,9 +100,9 @@ class DataMap_Cos(DataMap):
     
     def __repr__(self) -> str:
         if self.default:
-            return "phi_S : x --> {x if S={i}, (pi - x[i])(pi - x[j]) if S={i,j})"
+            return "phi_S : x --> {x if S={i}, (pi - x[i])(pi - x[j]) if S={i,j}"
         else:
-            return "phi_S : x --> {x if S={i}, pi/3*(1/(cos(x[i])cos(x[j]))) if S={i,j})"
+            return "phi_S : x --> {x if S={i}, pi/3*(1/(cos(x[i])cos(x[j]))) if S={i,j}"
 
     def _custom(self, x) -> float:
         """ Data map function, f: R^n -> R

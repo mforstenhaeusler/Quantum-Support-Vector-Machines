@@ -21,7 +21,8 @@ class kernelSVC:
         gamma=0.5, 
         degree=3, 
         alpha_tol=1e-4, 
-        quantum_parans=None,
+        quantum_params=None,
+        feature_map=None,
         data_map=None,
         qiskit=True,
         verbose=True):
@@ -47,6 +48,9 @@ class kernelSVC:
         quantum_params : dict
                          dictionary of quantum parameters required for computation
         
+        feature_map : parameterized qiskit circuit
+                      if None, default Feature Map == ZZFeatureMap, else use initialized Feature Map
+
         data_map : float
                    Data map function, f: R^n -> R
 
@@ -61,7 +65,7 @@ class kernelSVC:
             pass
         else:
             raise KernelError
-        self.quantum_params = quantum_parans
+        self.quantum_params = quantum_params
         self.C = C
         if C is not None: self.C = float(self.C)
         self.gamma = gamma
@@ -81,12 +85,24 @@ class kernelSVC:
         self.b = None
         self.is_fit = False
 
-        self.qk = quantum_kernel_loader(self.quantum_params, data_map, qiskit)
+        self.qk = quantum_kernel_loader(
+                self.quantum_params, 
+                feature_map_in=feature_map, 
+                data_map=data_map, 
+                qiskit_indicator=qiskit
+            )
 
         self.decision_function = None
         
         if self.C is None and self.kernel=='quantum':
-            print(f"SVC(kernel='{self.kernel}, feature_map='ZZFeatureMap', data_map='{data_map}'')")
+            if feature_map is None and data_map is None:
+                print(f"SVC(kernel='{self.kernel}', feature_map='ZZFeatureMap', data_map='default DataMap')")
+            elif feature_map is None :
+                print(f"SVC(kernel='{self.kernel}', feature_map='ZZFeatureMap', data_map='{data_map}')")
+            elif data_map is None :
+                print(f"SVC(kernel='{self.kernel}', feature_map='{feature_map}', data_map='default DataMap')")
+            else: 
+                print(f"SVC(kernel='{self.kernel}', feature_map='{feature_map}', data_map='{data_map}')")
         elif self.kernel == 'polynominal': 
             print(f"SVC(kernel='{self.kernel}', C={self.C}, degree={self.degree})")
         elif self.kernel == 'gaussian' or self.kernel == 'rbf' or self.kernel == 'sigmoid': 
