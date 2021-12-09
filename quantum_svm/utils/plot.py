@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.metrics import confusion_matrix
+from sklearn.svm import SVC
 import seaborn as sns
-
+from quantum_svm.svm.nonlinear_classifier import kernelSVC
 from .utils import normalize
 
 def plot_data(X, y, X_test, y_test, cmap, opacity=0.5,):
@@ -117,32 +118,7 @@ def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
         XX = np.array([[x1, x2] for x1, x2 in zip(np.ravel(X1), np.ravel(X2))])
         # clf's
         for idx, clf in enumerate(clf_list):
-            if idx == 0:
-    
-                Z = clf.project(XX).reshape(X1.shape)
-                ax[idx+1].contourf(X1, X2, Z, cmap=cmap, alpha=0.8)
-                # decision boundary
-                cs = ax[idx+1].contour(X1, X2, Z, colors="k", levels=[-1, 0, 1], alpha=0.7, linestyles=["--", "-", "--"])
-                fmt = {}
-                strs = ['first', 'Decision Boundary', 'second',]
-                for l, s in zip(cs.levels, strs):
-                    fmt[l] = s
-                ax[idx+1].clabel(cs, cs.levels[1:2], inline=True, fmt=fmt, fontsize=10)
-                # support vectors
-                ax[idx+1].scatter(
-                    clf.sv_X[:,0],
-                    clf.sv_X[:,1],
-                    s=150,
-                    linewidth=1,
-                    facecolors="none",
-                    edgecolors="k",
-                    label="Support Vectors"
-                )
-                ax[1].scatter(X[np.where(y[:] == -1),0], X[np.where(y[:] == -1),1], 
-                        c='b', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {-1}')
-                ax[1].scatter(X[np.where(y[:] == 1),0], X[np.where(y[:] == 1),1], 
-                            c='r', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {1}')
-            elif idx == 1:
+            if isinstance(SVC(), type(clf)):
                 #XX, YY = np.meshgrid(xx, yy)
                 #xy = np.vstack([XX.ravel(), YY.ravel()]).T
                 Z = clf.decision_function(XX).reshape(X1.shape)
@@ -166,10 +142,34 @@ def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
                         edgecolors="k",
                         label="Support Vectors"
                     )
-                ax[2].scatter(X[np.where(y[:] == -1),0], X[np.where(y[:] == -1),1], 
+                ax[idx+1].scatter(X[np.where(y[:] == -1),0], X[np.where(y[:] == -1),1], 
                         c='b', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {-1}')
-                ax[2].scatter(X[np.where(y[:] == 1),0], X[np.where(y[:] == 1),1], 
+                ax[idx+1].scatter(X[np.where(y[:] == 1),0], X[np.where(y[:] == 1),1], 
                         c='r', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {1}')
+            else:
+                Z = clf.project(XX).reshape(X1.shape)
+                ax[idx+1].contourf(X1, X2, Z, cmap=cmap, alpha=0.8)
+                # decision boundary
+                cs = ax[idx+1].contour(X1, X2, Z, colors="k", levels=[-1, 0, 1], alpha=0.7, linestyles=["--", "-", "--"])
+                fmt = {}
+                strs = ['first', 'Decision Boundary', 'second',]
+                for l, s in zip(cs.levels, strs):
+                    fmt[l] = s
+                ax[idx+1].clabel(cs, cs.levels[1:2], inline=True, fmt=fmt, fontsize=10)
+                # support vectors
+                ax[idx+1].scatter(
+                    clf.sv_X[:,0],
+                    clf.sv_X[:,1],
+                    s=150,
+                    linewidth=1,
+                    facecolors="none",
+                    edgecolors="k",
+                    label="Support Vectors"
+                )
+                ax[idx+1].scatter(X[np.where(y[:] == -1),0], X[np.where(y[:] == -1),1], 
+                        c='b', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {-1}')
+                ax[idx+1].scatter(X[np.where(y[:] == 1),0], X[np.where(y[:] == 1),1], 
+                            c='r', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {1}')
 
         for i in range(3):
             ax[i].set_xlabel('$x_1$')

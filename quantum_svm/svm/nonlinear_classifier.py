@@ -85,12 +85,13 @@ class kernelSVC:
         self.b = None
         self.is_fit = False
 
-        self.qk = quantum_kernel_loader(
-                self.quantum_params, 
-                feature_map_in=feature_map, 
-                data_map=data_map, 
-                qiskit_indicator=qiskit
-            )
+        if self.kernel == 'quantum':
+            self.qk = quantum_kernel_loader(
+                    self.quantum_params, 
+                    feature_map_in=feature_map, 
+                    data_map=data_map, 
+                    qiskit_indicator=qiskit
+                )
 
         self.decision_function = None
         
