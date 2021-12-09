@@ -86,12 +86,30 @@ class kernelSVC:
         self.is_fit = False
 
         if self.kernel == 'quantum':
-            self.qk = quantum_kernel_loader(
-                    self.quantum_params, 
-                    feature_map_in=feature_map, 
-                    data_map=data_map, 
-                    qiskit_indicator=qiskit
-                )
+            if feature_map is None and data_map is None:
+                self.qk = quantum_kernel_loader(
+                        self.quantum_params, 
+                        qiskit_indicator=qiskit
+                    )
+            elif feature_map is None:
+                self.qk = quantum_kernel_loader(
+                        self.quantum_params,
+                        data_map=data_map, 
+                        qiskit_indicator=qiskit
+                    )
+            elif data_map is None:
+                self.qk = quantum_kernel_loader(
+                        self.quantum_params,
+                        feature_map_in=feature_map,
+                        qiskit_indicator=qiskit
+                    )
+            else:
+                self.qk = quantum_kernel_loader(
+                        self.quantum_params,
+                        feature_map_in=feature_map,
+                        data_map=data_map, 
+                        qiskit_indicator=qiskit
+                    )
 
         self.decision_function = None
         
@@ -346,10 +364,4 @@ class KernelError(Exception):
         - rbf \
         - sigmoid \
         - quantum """
-    #print("""Kernel does not exits! Choose one of the following 
-    #    - linear 
-    #    - polynominal 
-    #    - gaussiam  
-    #    - rbf
-    #    - sigmoid
-    #    - quantum """)
+    

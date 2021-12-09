@@ -4,6 +4,7 @@ from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 import seaborn as sns
 from quantum_svm.svm.nonlinear_classifier import kernelSVC
+from qiskit_machine_learning.algorithms import QSVC
 from .utils import normalize
 
 def plot_data(X, y, X_test, y_test, cmap, opacity=0.5,):
@@ -118,7 +119,7 @@ def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
         XX = np.array([[x1, x2] for x1, x2 in zip(np.ravel(X1), np.ravel(X2))])
         # clf's
         for idx, clf in enumerate(clf_list):
-            if isinstance(SVC(), type(clf)):
+            if isinstance(SVC(), type(clf)) or isinstance(QSVC(), type(clf)):
                 #XX, YY = np.meshgrid(xx, yy)
                 #xy = np.vstack([XX.ravel(), YY.ravel()]).T
                 Z = clf.decision_function(XX).reshape(X1.shape)
