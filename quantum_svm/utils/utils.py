@@ -4,7 +4,7 @@ from tqdm import tqdm
 from time import time
 
 def normalize(X):
-    """ Normalizes Data --> [0,1].
+    """ Normalizes data --> [0,1].
 
     Params:
     -------
@@ -34,12 +34,12 @@ def accuracy(y, y_pred, verbose, mode):
     verbose : nd.array
               True Lables
 
-    mode : str,
-           Either test or train 
+    mode : str
+           Either 'test' or 'train' 
     
     Returns:
     --------
-    Accuracy of the model.
+    Accuracy of the model
     """
     y_true = y[y == y_pred]
     if verbose: 
@@ -50,19 +50,19 @@ def accuracy(y, y_pred, verbose, mode):
 
 
 def compare_models(datasets, models, data_titles, titles, opacity=1, decision_func=False, scikit=False):
-    """ Compares the model by displaying their resulting plot.
+    """ Compares the model by displaying its resulting plot.
     
     Params:
     -------
     datasets : list
-               list of datasets
+               List of datasets
     
     models : list
-             list of models
+             List of models
     
     Return:
     -------
-    plot of classifiers on each dataset
+    Plot of classifiers on each dataset
     """
     start = time()
     i = 1
@@ -82,7 +82,7 @@ def compare_models(datasets, models, data_titles, titles, opacity=1, decision_fu
         XX = np.array([[x1, x2] for x1, x2 in zip(np.ravel(X1), np.ravel(X2))])
         X, y = X_train, y_train
         
-        # Plot data    
+        # plot data    
         ax.scatter(X_train[np.where(y_train[:] == -1),0], X_train[np.where(y_train[:] == -1),1], 
             c='b', marker='o', alpha=0.6, edgecolor='k', label='Class {-1} Train')
         ax.scatter(X_train[np.where(y_train[:] == 1),0], X_train[np.where(y_train[:] == 1),1], 
@@ -137,7 +137,7 @@ def compare_models(datasets, models, data_titles, titles, opacity=1, decision_fu
                     c='b', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {-1}')
             ax.scatter(X[np.where(y[:] == 1),0], X[np.where(y[:] == 1),1], 
                         c='r', marker='o', alpha=opacity, edgecolor='k', label='Train Data Class {1}')
-            # Plot Data
+            # plot data
             ax.scatter(X_train[np.where(y_train[:] == -1),0], X_train[np.where(y_train[:] == -1),1], 
                 c='b', marker='o', alpha=0.6, edgecolor='k', label='Class {-1} Train')
             ax.scatter(X_train[np.where(y_train[:] == 1),0], X_train[np.where(y_train[:] == 1),1], 
@@ -165,15 +165,15 @@ def compare_model_performance(datasets, models, data_titles, titles, scikit=Fals
     Params:
     -------
     datasets : list
-               list of datasets
+               List of datasets
     
     models : list
-             list of models
+             List of models
     
     Return:
     -------
     sol_dict : dict
-               dictionary of model accuracy scores 
+               Dictionary of model accuracy scores 
     """
     start = time()
     i = 1

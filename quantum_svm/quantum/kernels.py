@@ -4,16 +4,18 @@ import numpy as np
 class QuantumKernel:
     def __init__(self, feature_map, quantum_backend, sim_params):
         """ Qunatum Kernel 
-        Implements Equation ... from slides.
+        Implements Equation 44 from the slides.
         
         Params:
         -------
         feature_map : qiskit instruction
-                      instruction for parameterized quantum circuit
+                      Instruction for parameterized quantum circuit
+
         quantum_backend : qiskit backend simulator 
-                          qiskit backend simulator that allows to simulate a quantum circuit
+                          Qiskit backend simulator --> allows one to simulate a quantum circuit
+
         sim_param : dict
-                    simulation parameters required by qiskit backend
+                    Simulation parameters required by qiskit backend
         """
         self._feature_map = feature_map
         self.n_qubits = feature_map.n_qubits
@@ -31,13 +33,14 @@ class QuantumKernel:
         Params:
         -------
         X1 : np.ndarray
-             classical data point to be transfered to quantum state 
-        X1 : np.ndarray
-             classical data point to be transfered to quantum state 
+             Classical data point to be transferred to quantum state 
+
+        X2 : np.ndarray
+             Classical data point to be transferred to quantum state 
 
         Return:
         -------
-        Parameterized quantum circuits for each entry of the qunatum kernel matrix.
+        Parameterized quantum circuits for each entry of the qunatum kernel matrix
         """
         circuit = QuantumCircuit(self.n_qubits, self.n_qubits)
         if self._statevector_sim: # statevector simulator
@@ -58,15 +61,16 @@ class QuantumKernel:
         Params:
         -------
         x_vec : 1D or 2D np.ndarray 
-                classical data to be transfered to quantum state 
+                Classical data to be transferred to quantum state 
+
         y_vec : 1D or 2D np.ndarray
-                classical data to be transfered to quantum state 
+                Classical data to be transferred to quantum state 
 
         Return:
         -------
-        Quantum Kernel Matrix
+        Quantum kernel matrix
         """
-        # - - - adopted form qiskit source code - - -
+        # - - - adopted from qiskit source code - - -
         if not isinstance(x_vec, np.ndarray):
             x_vec = np.asarray(x_vec)
         if y_vec is not None and not isinstance(y_vec, np.ndarray):
@@ -151,20 +155,20 @@ class QuantumKernel:
 
     def __compute_kernel_val(self, idx, job, measurement_basis):
         """
-        Computes the kernel values form the results of the inner products.
+        Computes the kernel values from the results of the inner products.
 
         Params:
         -------
         idx : int
-              index to be computed
+              Index to be computed
         
-        job : executed qiskit circuit result
+        job : Executed qiskit circuit result
 
         measurement_bias : str
                            qubit string, 0^n that we want to measure 
         Return:
         -------
-        Kernel value of entry [i, j] in Quantum Kernel Matrix K_{ij}
+        Kernel value of entry [i, j] in Quantum kernel matrix K_{ij}
         """
         if self._statevector_sim:
            raise BackendError
@@ -175,4 +179,4 @@ class QuantumKernel:
         return kernel_value
 
 class BackendError(Exception):
-    """ Choose a qasm simulator, statevector simulation has not been implemented yet"""
+    """ Choose a qasm simulator, statevector simulation has not been implemented yet """

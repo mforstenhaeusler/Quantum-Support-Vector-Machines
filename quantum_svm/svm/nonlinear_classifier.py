@@ -12,7 +12,6 @@ from tqdm import tqdm
 import time
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
-#from numba import jit
 
 class kernelSVC:
     def __init__(self, 
@@ -26,39 +25,40 @@ class kernelSVC:
         data_map=None,
         qiskit=True,
         verbose=True):
-        """ Support Vector Classifier implementing the Kernel Trick on SVM dual problem
+        """ Support Vector Classifier (eq. (24), eq. (25) and eq. (28) from the slides) 
+        implementing the Kernel Trick (eq. (32)) on the SVM dual problem.
 
         Params:
         -------
         kernel : str
-                 indicates the kernel in use
+                 Indicates the kernel in use
                 
         C : float
-            determines the margin strength
+            Determines the margin strength
         
         gamma : float
                 gamma = 1/((2*sigma) ** 2)
         
         degree : int
-                 degree of polynominal kernel 
+                 Degree of polynominal kernel 
 
         alpha_tol : float,
-                    minimum alpha value
+                    Minimum alpha value
         
         quantum_params : dict
-                         dictionary of quantum parameters required for computation
+                         Dictionary of quantum parameters required for computation
         
         feature_map : parameterized qiskit circuit
-                      if None, default Feature Map == ZZFeatureMap, else use initialized Feature Map
+                      If None, default Feature Map == ZZFeatureMap, else use initialized Feature Map
 
         data_map : float
                    Data map function, f: R^n -> R
 
         qiskit : bool
-                 determines if qiskit's QuantumKernel is used or custom implementation
+                 Determines if qiskit's QuantumKernel is used or custom implementation
 
         verbose : bool
-                  determines if report is printed
+                  Determines if report is printed
         """
         self.kernel = kernel 
         if self.kernel == 'linear' or self.kernel == 'polynominal' or self.kernel == 'gaussian' or self.kernel == 'rbf' or self.kernel == 'sigmoid' or self.kernel == 'quantum':
@@ -142,10 +142,11 @@ class kernelSVC:
 
         Parameters
         ----------
-        X : array, shape [N, D]
-            Input features.
-        y : array, shape [N]
-            Binary class labels (in {-1, 1} format).
+        X : nd.array, shape [N, D]
+            Input features
+
+        y : nd.array, shape [N]
+            Binary class labels (in {-1, 1} format)
         """
         N, D = X.shape
 
@@ -199,7 +200,7 @@ class kernelSVC:
             self.b -= np.sum(self.alphas * self.sv_y * self.gramMatrix[sv_ind[i], is_sv]) # sum per row 
         self.b /= len(self.alphas) # divided by alphas 
 
-        # Compute w only if the kernel is linear
+        # compute w only if the kernel is linear
         if self.kernel == linear_kernel:
             self.w = np.einsum('i,i,ij', self.alphas, self.sv_y, self.sv_X)
         else:
@@ -255,7 +256,7 @@ class kernelSVC:
             return y_pred + self.b
 
     def predict(self, X):
-        """ Performs Prediction """
+        """ Performs prediction """
         if self.is_fit:
             return np.sign(self.project(X))
         else:
@@ -271,7 +272,7 @@ class kernelSVC:
             raise SVMNotFitError 
 
     def parameters(self):
-        """ Gets all the relevant parameter for the return dictionary. """
+        """ Gets all the relevant parameters for the return dictionary. """
         self.params['weights'] = self.w
         self.params['bias'] = self.b
         self.params['sv_X'] = self.sv_X
@@ -302,12 +303,13 @@ class kernelSVC:
 
         Params:
         ------
-        X : nd.array,
+        X : nd.array
             Data
-        y : nd.array,
+
+        y : nd.array
             Labels
         
-        clf : classifier class,
+        clf : classifier class
               Classifier 
         """
         fig, ax = plt.subplots(1, figsize=(7,5))
@@ -354,16 +356,16 @@ class kernelSVC:
     
         Params:
         -------
-        y : nd.array, 
+        y : nd.array 
             True Labels
         
-        y_pred_custom : nd.array, 
+        y_pred_custom : nd.array
                         Predicted labels by custom model 
         
-        classes : list,
+        classes : list
                   List of colors
         
-        titles : str,
+        titles : str
                  Title name
         """
         cm = confusion_matrix(y, y_pred_custom)
@@ -380,13 +382,12 @@ class kernelSVC:
         plt.show()
 
 
-class SVMNotFitError(Exception): # change text
-    """Exception raised when the 'project' or the 'predict' method of an SVM object is called without fitting
-    the model beforehand."""
-    #print("Your model has not been fitted yet!")
+class SVMNotFitError(Exception):
+    """ Raises exception when the 'project' or the 'predict' method of an SVM object is called without fitting
+    the model beforehand. """
 
 class KernelError(Exception): 
-    """Kernel does not exits! Choose one of the following 
+    """Kernel does not exist! Choose one of the following: 
         - linear \
         - polynominal \
         - gaussiam \

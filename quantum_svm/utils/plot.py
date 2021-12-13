@@ -9,6 +9,7 @@ from .utils import normalize
 
 def plot_data(X, y, X_test, y_test, cmap, opacity=0.5):
     """ Plots the data generated from the data_generators. 
+
     Params:
     ------
     X : nd.array
@@ -24,7 +25,7 @@ def plot_data(X, y, X_test, y_test, cmap, opacity=0.5):
              Testing labels
 
     cmap : matplotlib.colormap
-           colormap used for plotting the 2 classes
+           Colormap used for plotting the 2 classes
     
     opacity : int
               Opacity of points in plot 
@@ -54,20 +55,20 @@ def plot_SVM(X, y, params=None, baseline_clf=None, opacity=0.6, titles=None, sv=
     y : nd.array
         Labels 
     
-    params : dict, 
+    params : dict
              Dictionary of parameters required to plot the decision function of the custom implemented SVC
 
-    baseline_clf : baseline classifier (usually scikit-learn svc class),
+    baseline_clf : baseline classifier (usually scikit-learn svc class)
                    Benchmark SVC class 
     
     opacity : int
               Opacity of points in plot  
 
-    titles : list, 
-             list of titles for plot
+    titles : list
+             List of titles for plot
 
-    sv : bool,
-         if true, plots support vectors
+    sv : bool
+         If true, plots support vectors
     
     hyperplane : bool
                  If true, plots decision hyperplane
@@ -103,7 +104,7 @@ def plot_SVM(X, y, params=None, baseline_clf=None, opacity=0.6, titles=None, sv=
         ax[1].scatter(params['sv_X'][:,0], params['sv_X'][:,1], s=150, linewidth=1, facecolors="none", edgecolor='black', label="Support Vectors")
     
     
-    # Baseline
+    # baseline
     XX, YY = np.meshgrid(xx, yy)
     xy = np.vstack([XX.ravel(), YY.ravel()]).T
     Z = baseline_clf.decision_function(xy).reshape(XX.shape)
@@ -130,9 +131,6 @@ def plot_SVM(X, y, params=None, baseline_clf=None, opacity=0.6, titles=None, sv=
     for i in range(3):
         ax[i].set_xlabel('$x_1$',fontsize=12)
         ax[i].set_ylabel('$x_2$',fontsize=12)
-        #ax[i].set_ylim(-0.1, 1.1)
-        #ax[i].set_xlim(-0.1, 1.1)
-        #ax[i].legend(loc='upper right', fontsize=13)
         if titles is not None:
             ax[i].set_title(titles[i], fontsize=16)
 
@@ -251,19 +249,19 @@ def plot_confusion_matrix(y, y_pred_custom, y_pred_baseline, classes, titles=Non
     
     Params:
     -------
-    y : nd.array, 
+    y : nd.array
         True Labels
     
-    y_pred_custom : nd.array, 
+    y_pred_custom : nd.array
                     Predicted labels by custom model 
     
-    y_pred_baseline : nd.array, 
+    y_pred_baseline : nd.array
                       Predicted labels by baseline model 
     
-    classes : list,
+    classes : list
               List of colors
     
-    titles : list.
+    titles : list
              List of titles for plot
     """
     cm1 = confusion_matrix(y, y_pred_custom)

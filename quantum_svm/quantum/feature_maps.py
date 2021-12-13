@@ -5,12 +5,13 @@ from .data_maps import DataMap
 class ZZFeatureMap:
     def __init__(self, n_qubits, reps, data_map=None, insert_barriers=False) -> None:
         """ ZZFeature Map
-        Special Pauli-Feature Map. Implements Equation 41 from slides.
+        Special Pauli-Feature Map. Implements Equation 41 from the slides.
 
         Params:
         -------
         n_qubits : int 
                    number of qubits
+
         reps : int
                number of repetitions of unitary operator 
         
@@ -30,7 +31,7 @@ class ZZFeatureMap:
         self._circuit = None
     
     def map(self, data, reverse=False):
-        """ Function that builds the parameterized quantum circuit of the ZZ-Feature Map"""
+        """ Builds the parameterized quantum circuit of the ZZ-Feature Map"""
         circuit = QuantumCircuit(self.n_qubits)
         for i in range(self.reps):
             if i > 0:
@@ -65,12 +66,13 @@ class ZZFeatureMap:
 class ZFeatureMap:
     def __init__(self, n_qubits, reps, data_map, insert_barriers=False) -> None:
         """ ZFeature Map
-        Special Pauli-Feature Map
+        Special Pauli-Feature Map.
 
         Params:
         -------
         n_qubits : int 
                    number of qubits
+                   
         reps : int
                number of repetitions of unitary operator 
         
@@ -87,7 +89,7 @@ class ZFeatureMap:
         self._circuit = None
     
     def map(self, data, reverse=False):
-        """ Function that builds the parameterized quantum circuit of the Z-Feature Map"""
+        """ Builds the parameterized quantum circuit of the Z-Feature Map"""
         circuit = QuantumCircuit(self.n_qubits)
         for i in range(self.reps):
             if i > 0:

@@ -8,21 +8,21 @@ from quantum_svm.quantum.feature_maps import ZZFeatureMap as ZZFeatureMap_custom
 from quantum_svm.quantum.data_maps import DataMap
 
 def quantum_kernel_loader(params, feature_map_in=None, data_map=None, qiskit_indicator=True):
-    """ Quantum Kernel implementation using Qiskit 
+    """ Quantum Kernel implementation using Qiskit.
     
     Params:
     -------
     params : dict
-             quantum parameters required for init of feature_map and kernel  
+             Quantum parameters required for init of feature_map and kernel  
     
     feature_map_in : parameterized qiskit circuit
-                     if None, default Feature Map == ZZFeatureMap, else use initialized Feature Map
+                     If None, default Feature Map == ZZFeatureMap, else use initialized Feature Map
 
     data_map : float
                Data map function, f: R^n -> R
 
     qiskit_indicator : bool
-                       determines if qiskit's QuantumKernel or custom implementation is used 
+                       Determines if qiskit's QuantumKernel or custom implementation is used 
 
     Return:
     -------

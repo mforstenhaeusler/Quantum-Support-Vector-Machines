@@ -5,21 +5,22 @@ from quantum_svm.utils.utils import accuracy
 
 class linearSVC:
     def __init__(self, C=None, alpha_tol=1e-4, verbose=True):
-        """ Linear Support Vector classifier implementing SVM dual problem 
-        for soft and hard margins.
-            * if C is None -> hard margin
+        """ Linear Support Vector classifier implementing the SVM dual problem 
+        for soft (eq. (24), eq. (25) and eq. (28) from the slides) and hard margins (eq. (10) 
+        and eq. (11) from the slides).
+            * if C is None -> hard margin 
             * if C is not None -> soft margin 
 
         Parameters
         ----------
         C : int
-            determines the margin strength
+            Determines the margin strength
 
-        alpha_tol : float,
-                    minimum alpha value
+        alpha_tol : float
+                    Minimum alpha value
         
         verbose : bool
-                  determines if report is printed
+                  Determines if report is printed
         """
         self.alphas = None
         self.alpha_tol = alpha_tol
@@ -41,15 +42,16 @@ class linearSVC:
         self.is_fit = False
         
     def fit(self, X, y):
-        """ Solves SVM dual problem with a QP solver.
-        Performs the fir for the classification.
+        """ Solves the SVM dual problem with a QP solver.
+        Performs the fit for the classification.
 
         Parameters
         ----------
-        X : array, shape [N, D]
-            Input features.
-        y : array, shape [N]
-            Binary class labels (in {-1, 1} format).
+        X : nd.array, shape [N, D]
+            Input features
+
+        y : nd.array, shape [N]
+            Binary class labels (in {-1, 1} format)
         """
         N, D = X.shape
 
@@ -115,13 +117,13 @@ class linearSVC:
         return X @ self.w + self.b
     
     def predict(self, X):
-        """ predicts the classes based on the classifier """
+        """ Predicts the classes based on the classifier """
         if not self.is_fit:
             raise SVMNotFitError
         return np.sign(self.project(X))
 
     def compute_params(self):
-        """ Gets all the relevant parameter for the return dictionary """
+        """ Gets all the relevant parameters for the return dictionary """
         self.params['weights'] = self.w
         self.params['bias'] = self.b
         self.params['sv_X'] = self.sv_X
@@ -133,6 +135,6 @@ class linearSVC:
         return self.params
     
     
-class SVMNotFitError(Exception): # change text 
-    """Exception raised when the 'project' or the 'predict' method of an SVM object is called without fitting
-    the model beforehand.""" 
+class SVMNotFitError(Exception):
+    """ Raises exception when the 'project' or the 'predict' method of an SVM object is called without fitting
+    the model beforehand. """ 
