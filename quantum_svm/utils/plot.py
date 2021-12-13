@@ -7,7 +7,28 @@ from quantum_svm.svm.nonlinear_classifier import kernelSVC
 from qiskit_machine_learning.algorithms import QSVC
 from .utils import normalize
 
-def plot_data(X, y, X_test, y_test, cmap, opacity=0.5,):
+def plot_data(X, y, X_test, y_test, cmap, opacity=0.5):
+    """ Plots the data generated from the data_generators. 
+    Params:
+    ------
+    X : nd.array
+        Training data
+
+    y : nd.array
+        Training labels
+
+    X_test : nd.array
+             Testing data
+
+    y_test : nd.array
+             Testing labels
+
+    cmap : matplotlib.colormap
+           colormap used for plotting the 2 classes
+    
+    opacity : int
+              Opacity of points in plot 
+    """
     fig, ax = plt.subplots(1, figsize=(7,5))
     im = ax.scatter(X[:,0], X[:,1], c=y, cmap=cmap, alpha=opacity, label='Train Data')
     im1 = ax.scatter(X_test[:,0], X_test[:,1], c=y_test, cmap=cmap, marker='s', edgecolors='k', alpha=opacity, label='Test Data')
@@ -23,7 +44,34 @@ def plot_data(X, y, X_test, y_test, cmap, opacity=0.5,):
     plt.show()
 
 def plot_SVM(X, y, params=None, baseline_clf=None, opacity=0.6, titles=None, sv=True, hyperplane=True):
-        
+    """ Plots the data vs the custom linear classifier vs the baseline model
+
+    Params:
+    -------
+    X : nd.array
+        Data
+
+    y : nd.array
+        Labels 
+    
+    params : dict, 
+             Dictionary of parameters required to plot the decision function of the custom implemented SVC
+
+    baseline_clf : baseline classifier (usually scikit-learn svc class),
+                   Benchmark SVC class 
+    
+    opacity : int
+              Opacity of points in plot  
+
+    titles : list, 
+             list of titles for plot
+
+    sv : bool,
+         if true, plots support vectors
+    
+    hyperplane : bool
+                 If true, plots decision hyperplane
+    """
     xx = np.linspace(X[:, 0].min(), X[:, 0].max(), 50) # plotting x range
     yy = np.linspace(X[:, 1].min(), X[:, 1].max(), 50) # plotting x range
 
@@ -93,13 +141,27 @@ def plot_SVM(X, y, params=None, baseline_clf=None, opacity=0.6, titles=None, sv=
     plt.show()
 
 def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
-        """ 
+        """ Plots the data vs custom implementation of the kernel SVC vs the baseline model
+
         Params:
-        ------
-        X : 
-        y : 
-        clf_list : clf_list
-        titles : titles
+        -------
+        X : nd.array
+            Data
+
+        y : nd.array
+            Labels 
+
+        clf_list : list
+                   List containing all classifiers that are supposed to be plotted    
+
+        titles : list, 
+                 List of titles for plot
+        
+        kernel : str
+                 If kernel=='quantum', changes meshgrid density   
+                
+        opacity : int
+                  Opacity of points in plot
         """
         fig, ax = plt.subplots(1,len(clf_list)+1, figsize=((23,5)))
         ax[0].scatter(X[np.where(y[:] == -1),0], X[np.where(y[:] == -1),1], 
@@ -185,6 +247,25 @@ def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
         plt.show()
 
 def plot_confusion_matrix(y, y_pred_custom, y_pred_baseline, classes, titles=None):
+    """ Plots the confusion matrix of the custom implementation vs the baseline model 
+    
+    Params:
+    -------
+    y : nd.array, 
+        True Labels
+    
+    y_pred_custom : nd.array, 
+                    Predicted labels by custom model 
+    
+    y_pred_baseline : nd.array, 
+                      Predicted labels by baseline model 
+    
+    classes : list,
+              List of colors
+    
+    titles : list.
+             List of titles for plot
+    """
     cm1 = confusion_matrix(y, y_pred_custom)
     cm2 = confusion_matrix(y, y_pred_baseline)
 
@@ -225,6 +306,13 @@ def plot_adhoc(adhoc_total, X_train, X_test, y_train, y_test):
     plt.show()
 
 def plot_datasets(datasets, titles):
+    """ Plots a list of dataset.
+    
+    Params:
+    -------
+    datasets : list
+               List of Datasets
+    """
     fig, ax = plt.subplots(2, 3, figsize=(20,10))
 
     for idx, dataset in enumerate(datasets):
@@ -232,11 +320,6 @@ def plot_datasets(datasets, titles):
             X_train, y_train, X_test, y_test, adhoc_total = dataset
             #X_train, y_train, X_test, y_test, adhoc_total = normalize(X_train), normalize(y_train), normalize(X_test), normalize(y_test), normalize(adhoc_total)
             i = idx-3 
-            #ax[1, i].set_ylim(0, 2 * np.pi)
-            #ax[1, i].set_xlim(0, 2 * np.pi)
-            #ax[1, i].imshow(np.asmatrix(adhoc_total).T, interpolation='nearest',
-            #        origin='lower', cmap='RdBu', alpha=0.8, extent=[0, 1, 0, 1])
-
             ax[1, i].scatter(X_train[np.where(y_train[:] == -1), 0], X_train[np.where(y_train[:] == -1), 1],
                         marker='o', facecolors='b', edgecolors='k', label="class {-1} train")
             ax[1, i].scatter(X_train[np.where(y_train[:] == 1), 0], X_train[np.where(y_train[:] == 1), 1],
