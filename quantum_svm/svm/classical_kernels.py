@@ -20,4 +20,5 @@ def rbf_kernel(x1, x2, gamma=0.5):
     return np.exp( -gamma * np.dot(x1 - x2, x1 - x2) )
 
 def sigmoid_kernel(x1, x2, gamma=0.5, c=1):
+    """ Sigmoid Kernel """
     return np.tanh(gamma * np.dot(x1, x2) + c)

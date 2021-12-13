@@ -72,6 +72,8 @@ class kernelSVC:
         self.degree = degree 
         self.alphas = None
         self.alpha_tol = alpha_tol
+        self.feature_map = feature_map
+        self.data_map = data_map
         self.verbose = verbose
             
         self.gramMatrix = 0
@@ -112,25 +114,31 @@ class kernelSVC:
                     )
 
         self.decision_function = None
-        
-        if self.C is None and self.kernel=='quantum':
-            if feature_map is None and data_map is None:
-                print(f"SVC(kernel='{self.kernel}', feature_map='ZZFeatureMap', data_map='default DataMap')")
-            elif feature_map is None :
-                print(f"SVC(kernel='{self.kernel}', feature_map='ZZFeatureMap', data_map='{data_map}')")
-            elif data_map is None :
-                print(f"SVC(kernel='{self.kernel}', feature_map='{feature_map}', data_map='default DataMap')")
-            else: 
-                print(f"SVC(kernel='{self.kernel}', feature_map='{feature_map}', data_map='{data_map}')")
-        elif self.kernel == 'polynominal': 
-            print(f"SVC(kernel='{self.kernel}', C={self.C}, degree={self.degree})")
-        elif self.kernel == 'gaussian' or self.kernel == 'rbf' or self.kernel == 'sigmoid': 
-            print(f"SVC(kernel='{self.kernel}', C={self.C}, gamma={self.gamma})")
-        else:
-            print(f"SVC(kernel='{self.kernel}', C={self.C})")
+
+        print(self.__repr__())
     
+    def __str__(self) -> str :
+        return self.__repr__()
+
+    def __repr__(self) -> str:   
+        if self.C is None and self.kernel=='quantum':
+            if self.feature_map is None and self.data_map is None:
+                return f"SVC(kernel='{self.kernel}', feature_map='ZZFeatureMap', data_map='default DataMap')"
+            elif self.feature_map is None :
+                return f"SVC(kernel='{self.kernel}', feature_map='ZZFeatureMap', data_map='{self.data_map}')"
+            elif self.data_map is None :
+                return f"SVC(kernel='{self.kernel}', feature_map='{self.feature_map}', data_map='default DataMap')"
+            else: 
+                return f"SVC(kernel='{self.kernel}', feature_map='{self.feature_map}', data_map='{self.data_map}')"
+        elif self.kernel == 'polynominal': 
+            return f"SVC(kernel='{self.kernel}', C={self.C}, degree={self.degree})"
+        elif self.kernel == 'gaussian' or self.kernel == 'rbf' or self.kernel == 'sigmoid': 
+            return f"SVC(kernel='{self.kernel}', C={self.C}, gamma={self.gamma})"
+        else:
+            return f"SVC(kernel='{self.kernel}', C={self.C})"
+
     def fit(self, X, y):
-        """ Solves SVM dual problem with a QP solver.
+        """ Solves SVM dual problem with a QP solver and fits the model with the training data.
 
         Parameters
         ----------
@@ -138,11 +146,6 @@ class kernelSVC:
             Input features.
         y : array, shape [N]
             Binary class labels (in {-1, 1} format).
-
-        Returns
-        -------
-        alphas : array, shape [N]
-                 Solution of the dual problem.
         """
         N, D = X.shape
 
@@ -219,6 +222,7 @@ class kernelSVC:
         accuracy(y, y_pred, self.verbose, mode='training')
     
     def project(self, X):
+        """ Performs projection """
         # If the model is not fit, raise an exception
         if not self.is_fit:
             raise SVMNotFitError
@@ -251,13 +255,14 @@ class kernelSVC:
             return y_pred + self.b
 
     def predict(self, X):
+        """ Performs Prediction """
         if self.is_fit:
             return np.sign(self.project(X))
         else:
             raise SVMNotFitError
 
     def score(self, X, y):
-        """ Computes and returns the accuracy of the model """
+        """ Computes and returns the accuracy of the model. """
         if self.is_fit:
             y_pred = self.predict(X)
             time.sleep(0.2)
@@ -266,7 +271,7 @@ class kernelSVC:
             raise SVMNotFitError 
 
     def parameters(self):
-        """ Gets all the relevant parameter for the return dictionary """
+        """ Gets all the relevant parameter for the return dictionary. """
         self.params['weights'] = self.w
         self.params['bias'] = self.b
         self.params['sv_X'] = self.sv_X
@@ -278,6 +283,7 @@ class kernelSVC:
         return self.params
     
     def kernel_func(self, x1, x2, X=None, y=None):
+        """ Initializes the kernel used in the fitting function. """
         if self.kernel == 'linear':
             return linear_kernel(x1, x2)
         elif self.kernel == 'polynominal':
@@ -292,12 +298,17 @@ class kernelSVC:
             raise KernelError
 
     def plot(self, X, y, cmap, sv=True):
-        """ 
+        """ Plots the result of the classification.
+
         Params:
         ------
-        X : 
-        y : 
-        clf : classifier
+        X : nd.array,
+            Data
+        y : nd.array,
+            Labels
+        
+        clf : classifier class,
+              Classifier 
         """
         fig, ax = plt.subplots(1, figsize=(7,5))
         im = ax.scatter(X[:,0], X[:,1], c=y, cmap=cmap, alpha=0.7, label='Data')
@@ -335,9 +346,26 @@ class kernelSVC:
         plt.show()
     
     def get_kernel_matrix(self):
+        """ Returns the GramMatrix """
         return self.gramMatrix
     
     def plot_confusion_matrix(self, y, y_pred_custom, classes, title=None):
+        """ Plots the confusion matrix of the custom implementation vs the baseline model. 
+    
+        Params:
+        -------
+        y : nd.array, 
+            True Labels
+        
+        y_pred_custom : nd.array, 
+                        Predicted labels by custom model 
+        
+        classes : list,
+                  List of colors
+        
+        titles : str,
+                 Title name
+        """
         cm = confusion_matrix(y, y_pred_custom)
         ax = sns.heatmap(cm, xticklabels=classes, yticklabels=classes, annot=True, fmt='0.2g', cmap=plt.cm.Blues,)
         
@@ -350,6 +378,7 @@ class kernelSVC:
             ax.set_title(title, fontsize=12)
         
         plt.show()
+
 
 class SVMNotFitError(Exception): # change text
     """Exception raised when the 'project' or the 'predict' method of an SVM object is called without fitting
