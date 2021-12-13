@@ -4,13 +4,42 @@ from tqdm import tqdm
 from time import time
 
 def normalize(X):
-    """ Normalizes Data """
+    """ Normalizes Data --> [0,1]
+    Params:
+    -------
+    X : nd.array
+        Data
+    
+    Returns:
+    --------
+    X_norm : nd.array
+             Normalized data
+    """
     x_max = np.max(X, axis=0)
     x_min = np.min(X, axis=0)
-    
     return (X - x_min)/(x_max - x_min)
 
 def accuracy(y, y_pred, verbose, mode):
+    """ Calculates the accuracy 
+    
+    Params:
+    -------
+    y : nd.array
+        True labels
+
+    y_pred : nd.array
+             Predicted labels
+    
+    verbose : nd.array
+              True Lables
+
+    mode : str,
+           Either test or train 
+    
+    Returns:
+    --------
+    Accuracy of the model.
+    """
     y_true = y[y == y_pred]
     if verbose: 
         print(f'Accuracy on {mode} set: {len(y_true)/len(y) * 100} %')
@@ -20,7 +49,7 @@ def accuracy(y, y_pred, verbose, mode):
 
 
 def compare_models(datasets, models, data_titles, titles, opacity=1, decision_func=False, scikit=False):
-    """
+    """ Compares the model by displaying their resulting plot.
     
     Params:
     -------
@@ -130,7 +159,7 @@ def compare_models(datasets, models, data_titles, titles, opacity=1, decision_fu
     print('Time to compute:', (end-start)/60, 'min')
 
 def compare_model_performance(datasets, models, data_titles, titles, scikit=False, verbose=False):
-    """
+    """ Computes the accuracy of the input models.
     
     Params:
     -------
