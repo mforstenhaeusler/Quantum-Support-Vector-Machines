@@ -44,7 +44,7 @@ def plot_data(X, y, X_test, y_test, cmap, opacity=0.5):
     plt.show()
 
 def plot_SVM(X, y, params=None, baseline_clf=None, opacity=0.6, titles=None, sv=True, hyperplane=True):
-    """ Plots the data vs the custom linear classifier vs the baseline model
+    """ Plots the data vs the custom linear classifier vs the baseline model.
 
     Params:
     -------
@@ -141,7 +141,7 @@ def plot_SVM(X, y, params=None, baseline_clf=None, opacity=0.6, titles=None, sv=
     plt.show()
 
 def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
-        """ Plots the data vs custom implementation of the kernel SVC vs the baseline model
+        """ Plots the data vs custom implementation of the kernel SVC vs the baseline model.
 
         Params:
         -------
@@ -247,7 +247,7 @@ def plot_kernel_SVC(X, y, clf_list, cmap, titles=None, kernel=None, opacity=1):
         plt.show()
 
 def plot_confusion_matrix(y, y_pred_custom, y_pred_baseline, classes, titles=None):
-    """ Plots the confusion matrix of the custom implementation vs the baseline model 
+    """ Plots the confusion matrix of the custom implementation vs the baseline model. 
     
     Params:
     -------

@@ -4,7 +4,8 @@ from tqdm import tqdm
 from time import time
 
 def normalize(X):
-    """ Normalizes Data --> [0,1]
+    """ Normalizes Data --> [0,1].
+
     Params:
     -------
     X : nd.array
@@ -20,7 +21,7 @@ def normalize(X):
     return (X - x_min)/(x_max - x_min)
 
 def accuracy(y, y_pred, verbose, mode):
-    """ Calculates the accuracy 
+    """ Calculates the accuracy. 
     
     Params:
     -------
